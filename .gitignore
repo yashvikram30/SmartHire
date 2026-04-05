@@ -1,0 +1,46 @@
+# --- General & OS ---
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# --- Dependencies ---
+# Never push node_modules. It is heavy and can be re-installed via package.json
+node_modules/
+*/node_modules/
+
+# --- Environment Variables ---
+# STRICTLY IGNORED: Contains sensitive API keys and DB URI
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Allow the template file so others know what keys are needed
+! .env.example
+
+# --- Build Outputs (Frontend) ---
+# Standard React/Vite/Next.js build folders
+build/
+dist/
+.next/
+out/
+
+# --- Backend Specifics ---
+# Optional: specific coverage or temp folders
+coverage/
+.nyc_output/
+
+# --- IDE & Editors ---
+.idea/
+.vscode/
+*.swp
+*.swo
+
+
+# ---- upload dir ---- 
+uploads
