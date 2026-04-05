@@ -103,6 +103,7 @@ const AppRoutes = () => {
       <Route element={<ProtectedRoute allowedRoles={['jobseeker']} />}>
         <Route element={<JobSeekerLayout />}>
           <Route path="/jobseeker/dashboard" element={<JobSeekerDashboard />} />
+          <Route path="/jobseeker/jobs" element={<JobListings dashboardMode={true} />} />
           <Route path="/jobseeker/profile" element={<JobSeekerProfile />} />
           <Route path="/jobseeker/applications" element={<MyApplications />} />
           <Route path="/jobseeker/applications/:id" element={<ApplicationDetail />} />

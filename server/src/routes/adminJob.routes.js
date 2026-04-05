@@ -39,6 +39,13 @@ adminJobRouter.get("/statistics", getJobStatistics);
 adminJobRouter.get("/", getAllJobs);
 
 /**
+ * @route   PATCH /api/v1/admin/jobs/bulk/approve
+ * @desc    Bulk approve multiple jobs
+ * @access  Private/Admin
+ */
+adminJobRouter.patch("/bulk/approve", bulkApproveJobs);
+
+/**
  * @route   PATCH /api/v1/admin/jobs/:id/approve
  * @desc    Approve a job posting
  * @access  Private/Admin
@@ -66,12 +73,5 @@ adminJobRouter.patch("/:id/feature", featureJob);
  * @access  Private/Admin
  */
 adminJobRouter.delete("/:id", deleteJob);
-
-/**
- * @route   PATCH /api/v1/admin/jobs/bulk/approve
- * @desc    Bulk approve multiple jobs
- * @access  Private/Admin
- */
-adminJobRouter.patch("/bulk/approve", bulkApproveJobs);
 
 export default adminJobRouter;

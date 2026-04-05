@@ -343,7 +343,11 @@ ApplicationSchema.statics.getByJobSeeker = function (
   filters = {},
 ) {
   return this.find({ jobSeekerId, ...filters })
-    .populate("jobId", "title employmentType location")
+    .populate({
+      path: "jobId",
+      select: "title companyId employmentType location",
+      populate: { path: "companyId", select: "companyName companyLogo" }
+    })
     .populate("recruiterId", "name email")
     .sort({ appliedAt: -1 });
 };

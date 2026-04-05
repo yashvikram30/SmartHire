@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MapPin, Briefcase, DollarSign, Clock, Bookmark, ChevronDown, ChevronUp, ExternalLink, Building, GraduationCap, Users, Calendar, Layers } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
@@ -6,16 +6,29 @@ import Card from '@components/common/Card';
 import Badge from '@components/common/Badge';
 import Button from '@components/common/Button';
 import useAuthStore from '@store/authStore';
+import useApplicationStore from '@store/applicationStore';
 import { jobSeekerApi } from '@api/jobSeekerApi';
 import { publicApi } from '@api/publicApi';
 import ViewCountBadge from '@components/jobs/ViewCountBadge';
+import ApplyJobModal from '@components/jobs/ApplyJobModal';
 
 const JobCard = ({ job }) => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuthStore();
+  const { appliedJobIds, fetchAppliedJobIds } = useApplicationStore();
+
   const [isExpanded, setIsExpanded] = useState(false);
   const [saving, setSaving] = useState(false);
   const [hasTrackedView, setHasTrackedView] = useState(false);
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated && (user?.role === 'jobseeker' || user?.role === 'candidate')) {
+      fetchAppliedJobIds();
+    }
+  }, [isAuthenticated, user?.role, fetchAppliedJobIds]);
+
+  const hasApplied = appliedJobIds.includes(job._id);
 
   const formatSalary = (min, max) => {
     if (!min && !max) return 'Not specified';
@@ -73,7 +86,7 @@ const JobCard = ({ job }) => {
       return;
     }
     
-    if (user?.role !== 'candidate') return;
+    if (user?.role !== 'candidate' && user?.role !== 'jobseeker') return;
 
     try {
       setSaving(true);
@@ -93,7 +106,13 @@ const JobCard = ({ job }) => {
       navigate('/login');
       return;
     }
-    toast.success('Application functionality coming soon!');
+    // Only candidates can apply
+    if (user?.role !== 'candidate' && user?.role !== 'jobseeker') {
+      toast.error('Only candidates can apply to internships');
+      return;
+    }
+    
+    setIsApplyModalOpen(true);
   };
 
   const handleVisitCompany = (e) => {
@@ -126,7 +145,7 @@ const JobCard = ({ job }) => {
   };
 
   // Hide action buttons for non-candidates (Recruiters/Admins)
-  const showActions = !isAuthenticated || user?.role === 'candidate';
+  const showActions = !isAuthenticated || user?.role === 'candidate' || user?.role === 'jobseeker';
 
   return (
     <Card
@@ -300,7 +319,7 @@ const JobCard = ({ job }) => {
 
       {/* Footer / Actions */}
       <div className="flex items-center justify-between pt-4 border-t border-light-border dark:border-dark-border mt-4">
-        <div className="flex items-center space-x-2 text-primary-600 dark:text-primary-400 font-semibold">
+             <div className="flex items-center space-x-2 text-primary-600 dark:text-primary-400 font-semibold">
           <DollarSign className="w-5 h-5" />
           <span>{formatSalary(job.salary?.min || job.salaryMin, job.salary?.max || job.salaryMax)}</span>
         </div>
@@ -324,28 +343,52 @@ const JobCard = ({ job }) => {
                             <Bookmark className={`w-4 h-4 mr-1 ${saving ? 'animate-pulse' : ''}`} />
                             Save
                         </Button>
-                        <Button variant="primary" size="sm" onClick={handleApply}>
-                            Apply Now
-                            <ExternalLink className="w-3 h-3 ml-2" />
-                        </Button>
+                        {hasApplied ? (
+                            <Button variant="outline" size="sm" disabled className="text-success-600 border-success-200 bg-success-50 dark:bg-success-900/20 dark:border-success-800 pointer-events-none">
+                                Applied ✓
+                            </Button>
+                        ) : (
+                            <Button variant="primary" size="sm" onClick={handleApply}>
+                                Apply Now
+                                <ExternalLink className="w-3 h-3 ml-2" />
+                            </Button>
+                        )}
                     </>
                 )}
              </div>
         ) : (
-             <div className="flex items-center space-x-2">
+             <div className="flex items-center space-x-3">
                 {job.isUrgent && <Badge variant="error">Urgent</Badge>}
                 {showActions && (
-                    <button
-                        onClick={handleSaveJob}
-                        className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-bg-tertiary transition-colors"
-                        aria-label="Save job"
-                    >
-                        <Bookmark className="w-5 h-5 text-gray-400 hover:text-primary-600 dark:hover:text-primary-400" />
-                    </button>
+                    <>
+                        <button
+                            onClick={handleSaveJob}
+                            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-bg-tertiary transition-colors"
+                            aria-label="Save job"
+                        >
+                            <Bookmark className="w-5 h-5 text-gray-400 hover:text-primary-600 dark:hover:text-primary-400" />
+                        </button>
+                        {hasApplied ? (
+                            <Button variant="outline" size="sm" disabled className="text-success-600 border-success-200 bg-success-50 dark:bg-success-900/20 dark:border-success-800 pointer-events-none">
+                                Applied ✓
+                            </Button>
+                        ) : (
+                            <Button variant="primary" size="sm" onClick={handleApply}>
+                                Apply Now
+                            </Button>
+                        )}
+                    </>
                 )}
              </div>
         )}
       </div>
+
+      {/* Apply Modal */}
+      <ApplyJobModal 
+        isOpen={isApplyModalOpen}
+        onClose={() => setIsApplyModalOpen(false)}
+        job={job}
+      />
     </Card>
   );
 };

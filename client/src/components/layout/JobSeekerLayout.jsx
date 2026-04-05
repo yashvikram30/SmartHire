@@ -11,7 +11,7 @@ import {
 const JobSeekerLayout = () => {
   const sidebarLinks = [
     { to: '/jobseeker/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/jobs', label: 'Browse Internships', icon: Briefcase },
+    { to: '/jobseeker/jobs', label: 'Browse Internships', icon: Briefcase },
     { to: '/jobseeker/applications', label: 'My Applications', icon: FileText },
     { to: '/jobseeker/saved-jobs', label: 'Saved Internships', icon: BookmarkCheck },
     { to: '/jobseeker/profile', label: 'Profile', icon: User },

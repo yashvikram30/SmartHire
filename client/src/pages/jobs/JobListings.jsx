@@ -11,7 +11,7 @@ import Button from '@components/common/Button';
 import { publicApi } from '@api/publicApi';
 import { toast } from 'react-hot-toast';
 
-const JobListings = () => {
+const JobListings = ({ dashboardMode = false }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   
   // State
@@ -156,8 +156,8 @@ const JobListings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-dark-bg">
-      <Navbar />
+    <div className={dashboardMode ? "" : "min-h-screen bg-gray-50 dark:bg-dark-bg"}>
+      {!dashboardMode && <Navbar />}
       
       {/* Search Bar Section */}
       <div className="bg-white dark:bg-dark-bg-secondary border-b border-light-border dark:border-dark-border py-8">

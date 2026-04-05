@@ -54,10 +54,6 @@ export const adminApi = {
   },
   
   // Job Moderation
-  getAllJobs: async (params) => {
-    const response = await api.get('/admin/jobs/pending', { params });
-    return response.data;
-  },
   
   getPendingJobs: async () => {
     const response = await api.get('/admin/jobs/pending');
@@ -81,11 +77,6 @@ export const adminApi = {
   
   deleteJob: async (jobId) => {
     const response = await api.delete(`/admin/jobs/${jobId}`);
-    return response.data;
-  },
-  
-  getJobStatistics: async () => {
-    const response = await api.get('/admin/jobs/statistics');
     return response.data;
   },
   
